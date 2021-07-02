@@ -63,7 +63,6 @@ function signRating(rating){
         timestamp: timestamp,
     };
 
-
     return ratingWithSig;
 }
 
