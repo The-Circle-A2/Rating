@@ -22,7 +22,7 @@ function verifyRating(rating, username){
                 return resolve();
             }
         } else {
-            axios.get('http://truyou.the-circle.designone.nl/user/' + username)
+            axios.get('http://127.0.0.1:8000/user/' + username)
             .then((response) => {
 
                 /*
@@ -62,6 +62,7 @@ function signRating(rating){
         signature: signature,
         timestamp: timestamp,
     };
+
 
     return ratingWithSig;
 }

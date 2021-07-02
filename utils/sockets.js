@@ -1,9 +1,13 @@
-const formatRating = require('./ratings');
+const {
+    formatRating,
+    addRating,
+    getAverageRating
+} = require('./ratings');
 const {
   userJoin,
   getCurrentUser,
   userLeave,
-  getStreamUsers
+  getStreamUsers,
 } = require('./users');
 const {logError} = require('./logmanager');
 const {verifyRating, signRating} = require('./rsaIntegrityHandler');
@@ -25,9 +29,20 @@ function startRatingServer(io) {
                     logError(signRating(`[RATING] ${user.username} send: ${rating.rating}`));
                 });
         });
+
+        socket.on('getAverageRating', () => {
+            const user = getCurrentUser(socket.id);
+
+            if (user) {
+                let average_rating = getAverageRating();
+                logError(signRating(`[AVERAGE_RATING] ${user.username} has requested average rating ${average_rating}`));
+                io.to(user.stream).emit('averageRatings', signRating(average_rating));
+            }
+        });
     });
 
     function emitRating(user, rating){
+        addRating(signRating(rating));
         io.to(user.stream).emit('rating', signRating(rating));
     }
 
