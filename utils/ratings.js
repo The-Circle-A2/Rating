@@ -31,4 +31,8 @@ function getAverageRating()
   return sum/ratings.length;
 }
 
-module.exports = formatRating;
+module.exports = {
+  formatRating,
+  addRating,
+  getAverageRating
+};

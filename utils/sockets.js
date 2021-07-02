@@ -1,7 +1,7 @@
 const {
     formatRating,
     addRating,
-    getAverageRating
+    getAverageRating,
 } = require('./ratings');
 const {
   userJoin,
