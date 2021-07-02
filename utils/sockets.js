@@ -20,11 +20,12 @@ function startRatingServer(io) {
     io.on('connection', socket => {
 
         socket.on('rate', rating => {
+            console.log("it works");
             verifyRating(rating, rating.username)
                 .then(() => {
                     const user = getCurrentUser(socket.id);
                     emitRating(user, formatRating(user.username, rating.mark, user.stream, false));
-                    SaveMongoDB(rating, user, rating.signature, true);
+                    //SaveMongoDB(rating, user, rating.signature, true);
 
                     logError(signRating(`[RATING] ${user.username} send: ${rating.rating}`));
                 });
