@@ -22,13 +22,8 @@ function addRating(id, username, mark, stream) {
 
 function getAverageRating()
 {
-  let sum = 0;
-
-  for( var i = 0; i < ratings.length; i++ ){
-    sum += parseInt( ratings[i], 10 ); //don't forget to add the base
-  }
-
-  return sum/ratings.length;
+  const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
+  return average(ratings);
 }
 
 module.exports = {
