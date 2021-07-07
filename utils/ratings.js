@@ -23,7 +23,7 @@ function editRating(rating) {
   ratings.find(rating => rating.username === rating.username).mark = rating.mark;
 }
 
-function getSocketFromCurrentUser(username) {
+function getRatingFromCurrentUser(username) {
   return ratings.find(rating => rating.username === username);
 }
 
@@ -35,6 +35,9 @@ function getAverageRating()
     total += parseFloat(ratings[i].mark);
   }
 
+  if(total <= 0 || ratings.length <= 0)
+    return 0;
+
   return parseFloat(total / ratings.length).toFixed(1);
 }
 
@@ -43,5 +46,5 @@ module.exports = {
   addRating,
   editRating,
   getAverageRating,
-  getSocketFromCurrentUser
+  getRatingFromCurrentUser
 };

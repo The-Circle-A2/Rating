@@ -3,7 +3,7 @@ const {
     addRating,
     editRating,
     getAverageRating,
-    getSocketFromCurrentUser
+    getRatingFromCurrentUser
 } = require('./ratings');
 const {logError} = require('./logmanager');
 const {verifyRating, signRating} = require('./rsaIntegrityHandler');
@@ -15,6 +15,23 @@ function startRatingServer(io) {
 
     io.on('connection', socket => {
 
+        socket.on('joinStream', (rating) => {
+            verifyRating(rating, rating.username)
+                .then(() => {
+                    console.log("Join stream key: " + rating.stream);
+                    socket.join(rating.stream);
+
+                    //Get average
+                    let average_rating = getAverageRating();
+
+                    io.to(rating.stream).emit('rating', signRating(average_rating));
+                    logError(signMessage(`[SYSTEM] ${rating.username} has joined the rating`));
+                })
+                .catch(() => {
+                    //
+                });
+        });
+
         socket.on('rate', (rating) => {
             verifyRating(rating, rating.username)
                 .then(() => {
@@ -24,22 +41,28 @@ function startRatingServer(io) {
                 });
         });
 
-        socket.on('getAverageRating', () => {
-            const rating = getSocketFromCurrentUser(rating.username);
-
+        socket.on('getAverageRating', (rating) => {
             //Get average
             let average_rating = getAverageRating();
-            console.log("Average Rating: " + average_rating);
 
             //Emit
-            io.emit('averageRatings', signRating(average_rating));
+            io.to(rating.stream).emit('rating', signRating(average_rating));
+            logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
+        });
+
+        socket.on('steamDisconnected', (rating) => {
+            //Get average
+            let average_rating = getAverageRating();
+
+            //Emit
+            io.to(rating.stream).emit('rating', signRating(average_rating));
             logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
         });
     });
 
     function emitRating(rating){
         //Add or edit if exists
-        if(!getSocketFromCurrentUser(rating.username)) {
+        if(!getRatingFromCurrentUser(rating.username)) {
             addRating(signRating(rating));
         } else {
             editRating(rating);
@@ -47,10 +70,9 @@ function startRatingServer(io) {
 
         //Get average
         let average_rating = getAverageRating();
-        console.log("Average Rating: " + average_rating);
 
         //Emit
-        io.emit('rating', signRating(average_rating));
+        io.to(rating.stream).emit('rating', signRating(average_rating));
         logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
     }
 
