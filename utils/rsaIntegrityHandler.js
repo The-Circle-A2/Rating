@@ -14,8 +14,8 @@ function verifyRating(rating, username){
     }
 
     return new Promise((resolve, reject) => {
-        //let username = "j.jansen";
         userMap.set("j.jansen", "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyYCtUTlrCDjKJ2HrDpe2CzotqZw5imLe6BdDmgniGuuLVYxG3Y40lcCSDfuUZXcaf53YgYZ08/j3tbU1yslkoW0KdGx0Sf4MC6VCKFVyGHSp6JRiwhjHI+PBzxlQTqBDQC+WPHpRDLAxKS1lBrO2AQ/CO9uSGABZy5IGgsIEoTd1W9BYpAdn7o3olke45qVXr56UsHN+o9e3mSo2b5g2qjVjfUmItYMru+zPgfk9rqcmzNbff5wUwKvfjc8Rr9jOxoy1bi9PGlScwejABWff3dfFt16piFwECQWN2bdaKXsdC06dbua5JTV+/Ohko338Fzeu3Xg5qGMt84KecRrwmwIDAQAB-----END PUBLIC KEY-----");
+        userMap.set("w.corner", "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArbm8q/fT7YUn4lmf9sFExMXWy21qInp/kpoaPWTNEd9vg66icYktLfxhUXTdr0UnbeQwpjX3yEQ8nUQy+MLLnOhoFxPUfre3jXGB7rSuOadEL8RCoJRY3UiFikwZCTVuxZf2N51m0vQuogOhMxryr9CBwSi25f0+8cImibteZ5ccgx2pDMknSz9XTxRwSM+1f/ILuk3+s/0q8AE6y3TyNZGkj509vvlqgYDClUEZdtyULrdVBG2bIgQoYwe00B0Vk0URU+J/Ein48a0pRxqT1dfQpcWjoJNkKr/gaW7isrpM6NJWfnsYUBwnPXu7xz1iHFAA5S1/WUe9TBojS0gK6wIDAQAB-----END PUBLIC KEY-----");
 
         if (userMap.has(username)){
             verify.setPublicKey(userMap.get(username));

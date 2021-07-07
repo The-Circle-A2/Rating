@@ -32,7 +32,7 @@ function startRatingServer(io) {
             console.log("Average Rating: " + average_rating);
 
             //Emit
-            io.to(user.stream).emit('averageRatings', signRating(average_rating));
+            io.emit('averageRatings', signRating(average_rating));
             logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
         });
     });
