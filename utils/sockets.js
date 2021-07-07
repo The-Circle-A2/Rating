@@ -1,14 +1,10 @@
 const {
     formatRating,
     addRating,
+    editRating,
     getAverageRating,
+    getSocketFromCurrentUser
 } = require('./ratings');
-const {
-  userJoin,
-  getCurrentUser,
-  userLeave,
-  getStreamUsers,
-} = require('./users');
 const {logError} = require('./logmanager');
 const {verifyRating, signRating} = require('./rsaIntegrityHandler');
 const mongo = require('mongodb');
@@ -22,29 +18,40 @@ function startRatingServer(io) {
         socket.on('rate', (rating) => {
             verifyRating(rating, rating.username)
                 .then(() => {
-                    userJoin(socket.id, rating.username, rating.stream);
-                    const user = getCurrentUser(socket.id);
-
-                    emitRating(user, formatRating(user.username, rating.mark, user.stream, false));
+                    emitRating(formatRating(socket.id, rating.username, rating.mark, rating.stream, false));
                     //SaveMongoDB(rating, user, rating.signature, true);
-                    logError(signRating(`[RATING] ${user.username} send: ${rating.mark}`));
+                    logError(signRating(`[RATING] ${rating.username} send: ${rating.mark}`));
                 });
         });
 
         socket.on('getAverageRating', () => {
-            const user = getCurrentUser(socket.id);
+            const rating = getSocketFromCurrentUser(rating.username);
 
-            if (user) {
-                let average_rating = getAverageRating();
-                logError(signRating(`[AVERAGE_RATING] ${user.username} has requested average rating ${average_rating}`));
-                io.to(user.stream).emit('averageRatings', signRating(average_rating));
-            }
+            //Get average
+            let average_rating = getAverageRating();
+            console.log("Average Rating: " + average_rating);
+
+            //Emit
+            io.to(user.stream).emit('averageRatings', signRating(average_rating));
+            logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
         });
     });
 
-    function emitRating(user, rating){
-        addRating(signRating(rating));
-        io.to(user.stream).emit('rating', signRating(rating));
+    function emitRating(rating){
+        //Add or edit if exists
+        if(!getSocketFromCurrentUser(rating.username)) {
+            addRating(signRating(rating));
+        } else {
+            editRating(rating);
+        }
+
+        //Get average
+        let average_rating = getAverageRating();
+        console.log("Average Rating: " + average_rating);
+
+        //Emit
+        io.emit('rating', signRating(average_rating));
+        logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
     }
 
     function SaveMongoDB(rating, user, signature, verified){

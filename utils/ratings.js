@@ -1,8 +1,9 @@
 const moment = require('moment');
 const ratings = [];
 
-function formatRating(username, mark, stream, info) {
+function formatRating(id, username, mark, stream, info) {
   return {
+    id,
     username,
     mark,
     stream,
@@ -12,22 +13,35 @@ function formatRating(username, mark, stream, info) {
   };
 }
 
-function addRating(id, username, mark, stream) {
-  const rating = { id, username, mark, stream };
-
-  ratings.push(rating);
+function addRating(rating) {
+  ratings.push(rating.rating);
 
   return rating;
 }
 
+function editRating(rating) {
+  ratings.find(rating => rating.username === rating.username).mark = rating.mark;
+}
+
+function getSocketFromCurrentUser(username) {
+  return ratings.find(rating => rating.username === username);
+}
+
 function getAverageRating()
 {
-  const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
-  return average(ratings);
+  let total = 0;
+
+  for(let i = 0; i < ratings.length; i++) {
+    total += parseFloat(ratings[i].mark);
+  }
+
+  return parseFloat(total / ratings.length).toFixed(1);
 }
 
 module.exports = {
   formatRating,
   addRating,
-  getAverageRating
+  editRating,
+  getAverageRating,
+  getSocketFromCurrentUser
 };
