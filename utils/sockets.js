@@ -42,21 +42,19 @@ function startRatingServer(io) {
         });
 
         socket.on('getAverageRating', (rating) => {
-            //Get average
-            let average_rating = getAverageRating();
+            verifyRating(rating, rating.username)
+                .then(() => {
+                    //Get average
+                    let average_rating = getAverageRating();
 
-            //Emit
-            io.to(rating.stream).emit('rating', signRating(average_rating));
-            logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
+                    //Emit
+                    io.to(rating.stream).emit('rating', signRating(average_rating));
+                    logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
+                });
         });
 
-        socket.on('steamDisconnected', (rating) => {
-            //Get average
-            let average_rating = getAverageRating();
-
-            //Emit
-            io.to(rating.stream).emit('rating', signRating(average_rating));
-            logError(signRating(`[AVERAGE_RATING] ${rating.username} has requested average rating ${average_rating}`));
+        socket.on('streamDisconnected', (rating) => {
+            console.log("disconnected");
         });
     });
 
