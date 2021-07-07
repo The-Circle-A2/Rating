@@ -19,15 +19,15 @@ function startRatingServer(io) {
 
     io.on('connection', socket => {
 
-        socket.on('rate', rating => {
-            console.log("it works");
+        socket.on('rate', (rating) => {
             verifyRating(rating, rating.username)
                 .then(() => {
+                    userJoin(socket.id, rating.username, rating.stream);
                     const user = getCurrentUser(socket.id);
+
                     emitRating(user, formatRating(user.username, rating.mark, user.stream, false));
                     //SaveMongoDB(rating, user, rating.signature, true);
-
-                    logError(signRating(`[RATING] ${user.username} send: ${rating.rating}`));
+                    logError(signRating(`[RATING] ${user.username} send: ${rating.mark}`));
                 });
         });
 
@@ -48,8 +48,6 @@ function startRatingServer(io) {
     }
 
     function SaveMongoDB(rating, user, signature, verified){
-        console.log(rating);
-
         MongoClient.connect(process.env.MONGODB_URL, (err, client) => {
             if (err) throw err;
 
@@ -67,7 +65,5 @@ function startRatingServer(io) {
         });
     }
 }
-
-
 
 module.exports = startRatingServer;
